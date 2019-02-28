@@ -1,0 +1,42 @@
+{
+  "hints": [],
+  "groups": [
+    {
+      "sourceType": "ru.gazprom_neft.amq_client.app.configuration.AMQPConfiguration",
+      "name": "amqp",
+      "type": "ru.gazprom_neft.amq_client.app.configuration.AMQPConfiguration"
+    }
+  ],
+  "properties": [
+    {
+      "sourceType": "ru.gazprom_neft.amq_client.app.configuration.AMQPConfiguration",
+      "name": "amqp.host",
+      "description": "AMQ service host",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "ru.gazprom_neft.amq_client.app.configuration.AMQPConfiguration",
+      "name": "amqp.password",
+      "description": "AMQ password",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "ru.gazprom_neft.amq_client.app.configuration.AMQPConfiguration",
+      "name": "amqp.port",
+      "description": "AMQ service port",
+      "type": "java.lang.Integer"
+    },
+    {
+      "sourceType": "ru.gazprom_neft.amq_client.app.configuration.AMQPConfiguration",
+      "name": "amqp.remote-u-r-i",
+      "description": "AMQ remoteURI",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "ru.gazprom_neft.amq_client.app.configuration.AMQPConfiguration",
+      "name": "amqp.username",
+      "description": "AMQ username",
+      "type": "java.lang.String"
+    }
+  ]
+}

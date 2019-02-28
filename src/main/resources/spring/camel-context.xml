@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring       http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+    <bean id="amqProcessor" class="ru.gazprom_neft.amq_client.processors.AMQProcessor" init-method="init" destroy-method="destroy"/>
+    <bean id="errorProcessor" class="ru.gazprom_neft.amq_client.processors.ErrorProcessor"/>
+    <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
+        <onException>
+            <exception>java.lang.Exception</exception>
+            <handled><constant>true</constant></handled>
+           <to uri="bean:errorProcessor"/>
+        </onException>
+        <restConfiguration apiContextPath="/api-doc" component="servlet" contextPath="/amq"
+                           host="{{amq.client.api.doc.host}}" port="{{amq.client.api.doc.port}}" enableCORS="true">
+            <apiProperty key="api.version" value="1.0"/>
+            <apiProperty key="api.title" value="AMQ client REST API"/>
+            <apiProperty key="api.license.name" value="Very restrictive license"/>
+            <apiProperty key="api.contact.name" value="GPN-AT"/>
+            <apiProperty key="api.contact.url" value="stub"/>
+            <apiProperty key="api.contact.email" value="stub"/>
+            <apiProperty key="schemes" value="http"/>
+        </restConfiguration>
+
+        <rest id="messages">
+            <get id="getMessage" uri="/popMessage">
+                <description>Get message from AMQ</description>
+                <responseMessage code="200" message="Ok"/>
+                <responseMessage code="403" message="Unavailable data"/>
+                <responseMessage code="500" message="Error happened"/>
+                <to uri="direct:process"/>
+            </get>
+            <post id="sendMessage" uri="/pushMessage" consumes="application/json"
+                 type="java.lang.Object">
+                <description>Send message to AMQ</description>
+                <responseMessage code="200" message="Ok"/>
+                <responseMessage code="403" message="Unavailable data"/>
+                <responseMessage code="500" message="Error happened"/>
+                <to pattern="InOnly" uri="amqp:topic:{{topic.name}}"/>
+            </post>
+        </rest>
+        <route id="getMessageFromAmq">
+            <from uri="direct:process"/>
+            <process ref="amqProcessor"/>
+        </route>
+
+    </camelContext>
+</beans>
