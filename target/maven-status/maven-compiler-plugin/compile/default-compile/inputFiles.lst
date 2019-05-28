@@ -1,0 +1,10 @@
+C:\Work\projects\amqClient\src\main\java\ru\gazprom_neft\amq_client\processors\ErrorProcessor.java
+C:\Work\projects\amqClient\src\main\java\ru\gazprom_neft\amq_client\model\JsonFaultMessage.java
+C:\Work\projects\amqClient\src\main\java\ru\gazprom_neft\amq_client\app\Application.java
+C:\Work\projects\amqClient\src\main\java\ru\gazprom_neft\amq_client\service\AMQService.java
+C:\Work\projects\amqClient\src\main\java\ru\gazprom_neft\amq_client\app\configuration\AMQPConfiguration.java
+C:\Work\projects\amqClient\src\main\java\ru\gazprom_neft\amq_client\app\configuration\SslContextParametersAutoConfiguration.java
+C:\Work\projects\amqClient\src\main\java\ru\gazprom_neft\amq_client\util\MessageUtil.java
+C:\Work\projects\amqClient\src\main\java\ru\gazprom_neft\amq_client\soap\AMQClientPopProcessor.java
+C:\Work\projects\amqClient\src\main\java\ru\gazprom_neft\amq_client\soap\AMQClient.java
+C:\Work\projects\amqClient\src\main\java\ru\gazprom_neft\amq_client\processors\AMQProcessor.java

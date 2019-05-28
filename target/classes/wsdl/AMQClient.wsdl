@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="AmqClient" targetNamespace="http://soap.amq-client.gazprom_neft.ru/wsdl/amq-client"
+                  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+                  xmlns:tns="http://soap.amq-client.gazprom_neft.ru/wsdl/amq-client"
+                  xmlns:ns1="http://soap.amq-client.gazprom_neft.ru/wsdl/amq-client"
+                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+    <wsdl:types>
+        <xs:schema xmlns:tns="http://soap.amq-client.gazprom_neft.ru/wsdl/amq-client"
+                   xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="unqualified"
+                   targetNamespace="http://soap.amq-client.gazprom_neft.ru/wsdl/amq-client" version="1.0">
+
+            <xs:element name="popMessage" type="tns:popMessage"/>
+
+            <xs:element name="popMessageResponse" type="tns:popMessageResponse"/>
+
+            <xs:element name="pushMessage" type="tns:pushMessage"/>
+
+            <xs:element name="pushMessageResponse" type="tns:pushMessageResponse"/>
+
+            <xs:complexType name="popMessage">
+                <xs:sequence/>
+            </xs:complexType>
+
+            <xs:complexType name="popMessageResponse">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="return" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+
+            <xs:complexType name="pushMessage">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="body" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+
+            <xs:complexType name="pushMessageResponse">
+                <xs:sequence/>
+            </xs:complexType>
+
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="popMessage">
+        <wsdl:part name="parameters" element="ns1:popMessage">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="pushMessage">
+        <wsdl:part name="parameters" element="ns1:pushMessage">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="pushMessageResponse">
+        <wsdl:part name="parameters" element="ns1:pushMessageResponse">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="popMessageResponse">
+        <wsdl:part name="parameters" element="ns1:popMessageResponse">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:portType name="AmqClient">
+        <wsdl:operation name="popMessage">
+            <wsdl:input name="popMessage" message="ns1:popMessage">
+            </wsdl:input>
+            <wsdl:output name="popMessageResponse" message="ns1:popMessageResponse">
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="pushMessage">
+            <wsdl:input name="pushMessage" message="ns1:pushMessage">
+            </wsdl:input>
+            <wsdl:output name="pushMessageResponse" message="ns1:pushMessageResponse">
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="AmqClientSoapBinding" type="ns1:AmqClient">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="popMessage">
+            <soap:operation soapAction="" style="document"/>
+            <wsdl:input name="popMessage">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="popMessageResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="pushMessage">
+            <soap:operation soapAction="" style="document"/>
+            <wsdl:input name="pushMessage">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="pushMessageResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="AmqClient">
+        <wsdl:port name="SoapOverAmq" binding="ns1:AmqClientSoapBinding">
+            <soap:address location="http://localhost:9090/SoapOverAmq"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>
