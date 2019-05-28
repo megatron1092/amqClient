@@ -1,30 +1,31 @@
 package ru.gazprom_neft.amq_client.processors;
 
+import com.google.gson.Gson;
+import lombok.extern.log4j.Log4j;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import ru.gazprom_neft.amq_client.model.JsonFaultMessage;
 
-
-/**
- * The type Error processor.
- * It takes care of all Exceptions happend at RunTime
- * and convert them to JSON
- */
+@Log4j
 public class ErrorProcessor implements Processor {
-    private static final String CONTENT_TYPE = "Content-Type";
-    private static final String APPLICATION_JSON = "application/json";
-
-    /**
-     * This method gets Throwable and create JSON with code, description and stacktrace,
-     * then it add result JSON in exchange, so it will be returned to user
-     * @param exchange
-     */
     @Override
-    public void process(Exchange exchange) {
+    public void process(Exchange exchange) throws Exception {
+        Gson gson = new Gson();
+        String camelContextPath = exchange.getIn().getHeader("CamelServletContextPath", String.class);
+        if (log.isDebugEnabled()) {
+            log.debug("CamelServletContextPath" + camelContextPath);
+        }
         Throwable t = (Throwable) exchange.getProperty("CamelExceptionCaught");
-        JsonFaultMessage exception = new JsonFaultMessage(500, t.toString(), t);
-        exchange.getOut().setBody(exception.toJson());
-        exchange.getOut().setHeader(CONTENT_TYPE, APPLICATION_JSON);
+        JsonFaultMessage exception;
+
+        exception = new JsonFaultMessage(500, t.toString(), t);
+
+        String sException = gson.toJson(exception, JsonFaultMessage.class);
+        if (log.isDebugEnabled()) {
+            log.debug("JSONException is " + sException);
+        }
+        exchange.getOut().setHeaders(exchange.getIn().getHeaders());
+        exchange.getOut().setBody(sException, String.class);
         exchange.getOut().setHeader(Exchange.HTTP_RESPONSE_CODE, 500);
     }
 }

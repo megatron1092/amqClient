@@ -1,19 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="
-       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://camel.apache.org/schema/spring       http://camel.apache.org/schema/spring/camel-spring.xsd">
+       xmlns:cxf="http://camel.apache.org/schema/cxf"
+       xmlns:cxfcore="http://cxf.apache.org/core"
+       xmlns:sec="http://cxf.apache.org/configuration/security"
+       xmlns:httpj="http://cxf.apache.org/transports/http-jetty/configuration"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring       http://camel.apache.org/schema/spring/camel-spring.xsd
+http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
+http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
+       http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/configuration/security.xsd
+       http://cxf.apache.org/transports/http-jetty/configuration http://cxf.apache.org/schemas/configuration/http-jetty.xsd"
+>
 
-    <bean id="amqProcessor" class="ru.gazprom_neft.amq_client.processors.AMQProcessor" init-method="init" destroy-method="destroy"/>
+    <cxfcore:bus/>
+    <cxf:cxfEndpoint id="amq-client"
+                     address="http://0.0.0.0:8091/amq/SOAP"
+                     endpointName="client:SoapOverAmq"
+                     serviceName="client:AmqClient"
+                     serviceClass="ru.gazprom_neft.amq_client.soap.AMQClient"
+                     xmlns:client="http://soap.amq-client.gazprom_neft.ru/wsdl/amq-client"
+
+    />
+
+    <!--<httpj:engine-factory bus="cxf">
+        <httpj:engine port="8091">
+            <httpj:tlsServerParameters secureSocketProtocol="TLSv1">
+                <sec:keyManagers keyPassword="${soap.keystore.password}">
+                    <sec:keyStore resource="${soap.keystore.path}" password="${soap.keystore.password}" type="JKS"/>
+                </sec:keyManagers>
+                <sec:clientAuthentication want="true" required="false"/>
+            </httpj:tlsServerParameters>
+        </httpj:engine>
+    </httpj:engine-factory>-->
+
+
+    <bean id="amqProcessor" class="ru.gazprom_neft.amq_client.processors.AMQProcessor"/>
     <bean id="errorProcessor" class="ru.gazprom_neft.amq_client.processors.ErrorProcessor"/>
+
+
     <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
+
         <onException>
             <exception>java.lang.Exception</exception>
-            <handled><constant>true</constant></handled>
-           <to uri="bean:errorProcessor"/>
+            <handled>
+                <constant>true</constant>
+            </handled>
+            <to uri="bean:errorProcessor"/>
         </onException>
-        <!--we need to explicitly specify propertyPlaceholder because unit-tests don't work without it-->
         <restConfiguration apiContextPath="/api-doc" component="servlet" contextPath="/amq"
                            host="{{amq.client.api.doc.host}}" port="{{amq.client.api.doc.port}}" enableCORS="true">
             <apiProperty key="api.version" value="1.0"/>
@@ -34,7 +68,7 @@
                 <to uri="direct:process"/>
             </get>
             <post id="sendMessage" uri="/pushMessage" consumes="application/json"
-                 type="java.lang.Object">
+                  type="java.lang.Object">
                 <description>Send message to AMQ</description>
                 <responseMessage code="200" message="Ok"/>
                 <responseMessage code="403" message="Unavailable data"/>
@@ -42,9 +76,26 @@
                 <to pattern="InOnly" uri="amqp:topic:{{topic.name}}"/>
             </post>
         </rest>
+
         <route id="getMessageFromAmq">
             <from uri="direct:process"/>
             <process ref="amqProcessor"/>
+        </route>
+
+        <route id="fromSoap">
+            <from uri="cxf:bean:amq-client"/>
+            <choice>
+                <when>
+                    <simple>${in.header.operationName} == 'popMessage'</simple>
+                    <to uri="AMQClientPopProcessor"/>
+                </when>
+                <when>
+                    <simple>${in.header.operationName} == 'pushMessage'</simple>
+                    <convertBodyTo type="java.lang.String"/>
+                    <to pattern="InOnly" uri="amqp:topic:{{topic.name}}"/>
+                </when>
+            </choice>
+
         </route>
 
     </camelContext>

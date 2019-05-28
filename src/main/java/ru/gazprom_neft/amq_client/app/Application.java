@@ -11,7 +11,7 @@ import org.springframework.context.annotation.PropertySource;
 import ru.gazprom_neft.amq_client.app.configuration.AMQPConfiguration;
 
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "ru.gazprom_neft.amq_client")
 @ImportResource({"classpath:spring/camel-context.xml"})
 @PropertySource("classpath:application.properties")
 public class Application {

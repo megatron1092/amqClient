@@ -1,0 +1,11 @@
+ru\gazprom_neft\amq_client\app\configuration\SslContextParametersAutoConfiguration.class
+ru\gazprom_neft\amq_client\model\JsonFaultMessage.class
+ru\gazprom_neft\amq_client\soap\AMQClientPopProcessor.class
+META-INF\spring-configuration-metadata.json
+ru\gazprom_neft\amq_client\app\Application.class
+ru\gazprom_neft\amq_client\app\configuration\AMQPConfiguration.class
+ru\gazprom_neft\amq_client\processors\AMQProcessor.class
+ru\gazprom_neft\amq_client\soap\AMQClient.class
+ru\gazprom_neft\amq_client\util\MessageUtil.class
+ru\gazprom_neft\amq_client\service\AMQService.class
+ru\gazprom_neft\amq_client\processors\ErrorProcessor.class
